@@ -13,6 +13,7 @@ const project = new typescript.TypeScriptProject({
   },
   autoApproveUpgrades: true,
 
+  releaseToNpm: true,
   sampleCode: false,
   deps: [
     'aws-sdk',
