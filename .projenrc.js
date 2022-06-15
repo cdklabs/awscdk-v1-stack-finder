@@ -7,6 +7,12 @@ const project = new typescript.TypeScriptProject({
     'awscdk-v1-stack-finder': 'bin/awscdk-v1-stack-finder',
   },
 
+  autoApproveOptions: {
+    allowedUsernames: ['cdklabs-automation'],
+    secret: 'GITHUB_TOKEN',
+  },
+  autoApproveUpgrades: true,
+
   sampleCode: false,
   deps: [
     'aws-sdk',
