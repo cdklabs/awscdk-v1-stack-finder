@@ -109,7 +109,7 @@ async function findV1Stacks(response, cloudformation, region) {
       body = YAML.parse(getTemplateResponse.TemplateBody);
     }
     if (body.Resources.CDKMetadata) {
-      var buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
+      const buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
       const analyticsString = zlib.gunzipSync(buf).toString();
       const majorVersion = analyticsString.slice(0,1);
       if (majorVersion === '1') {
