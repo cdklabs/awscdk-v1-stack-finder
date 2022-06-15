@@ -11,6 +11,12 @@ Configure you AWS credentials as normal, and run:
 npx awscdk-v1-stack-finder
 ```
 
+To use a profile, run:
+
+```console
+AWS_SDK_LOAD_CONFIG=1 AWS_PROFILE=<name> npx awscdk-v1-stack-finder
+```
+
 By default, this will scan all regions in your account (apart from `us-iso-east-1` and `us-iso-west-1`)
 and print the stacks that were deployed with AWS CDK V1:
 
