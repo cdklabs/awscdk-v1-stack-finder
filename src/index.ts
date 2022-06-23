@@ -150,9 +150,7 @@ async function findV1Stacks(
     if (body.Resources.CDKMetadata) {
       let stackUsedV1 = false;
       if (body.Resources.CDKMetadata.Properties?.Analytics) {
-        var buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
-        if (!buf) {
-        }
+        const buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
         const analyticsString = zlib.gunzipSync(buf).toString();
         stackUsedV1 = analyticsString.slice(0, 1) === '1';
       }
