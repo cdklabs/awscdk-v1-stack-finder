@@ -148,10 +148,19 @@ async function findV1Stacks(
       body = YAML.parse(getTemplateResponse.TemplateBody);
     }
     if (body.Resources.CDKMetadata) {
-      const buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
-      const analyticsString = zlib.gunzipSync(buf).toString();
-      const majorVersion = analyticsString.slice(0, 1);
-      if (majorVersion === '1') {
+      let stackUsedV1 = false;
+      if (body.Resources.CDKMetadata.Properties?.Analytics) {
+        const buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
+        const analyticsString = zlib.gunzipSync(buf).toString();
+        stackUsedV1 = analyticsString.slice(0, 1) === '1';
+      }
+
+      // Before versions 1.93.0 and 2.0.0-alpha.10, the CDKMetadata resource had a different format.
+      if (body.Resources.CDKMetadata.Properties?.Modules) {
+        stackUsedV1 = body.Resources.CDKMetadata.Properties.Modules.includes('@aws-cdk/core');
+      }
+
+      if (stackUsedV1) {
         stacks.push(`name: ${stack.StackName} | id: ${stack.StackId}`);
       }
     }
