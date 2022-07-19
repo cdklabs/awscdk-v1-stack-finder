@@ -142,11 +142,19 @@ async function findV1Stacks(
     }).promise().catch((error) => console.error(`${region}: Failed to get template for stack: ${stack.StackName}. Error: ${error}`)) as any;
 
     var body;
+    var jsonErr;
     try {
       body = JSON.parse(getTemplateResponse.TemplateBody);
-    } catch (err) {
-      body = YAML.parse(getTemplateResponse.TemplateBody);
+    } catch (err) { jsonErr = err; }
+
+    if (!body) {
+      try {
+        body = YAML.parse(getTemplateResponse.TemplateBody);
+      } catch (yamlErr) {
+        console.error(`${region}: Failed to parse template for stack: ${stack.StackName}. \nJSON Parse Error: ${jsonErr} \nYAML Parse Error: ${yamlErr}`);
+      }
     }
+
     if (body.Resources.CDKMetadata) {
       let stackUsedV1 = false;
       if (body.Resources.CDKMetadata.Properties?.Analytics) {
