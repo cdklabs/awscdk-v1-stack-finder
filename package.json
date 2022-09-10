@@ -37,13 +37,13 @@
     "jest-junit": "^13",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^15",
-    "projen": "^0.61.46",
+    "projen": "^0.62.0",
     "standard-version": "^9",
     "ts-jest": "^27",
     "typescript": "^4.8.3"
   },
   "dependencies": {
-    "aws-sdk": "^2.1212.0",
+    "aws-sdk": "^2.1213.0",
     "yaml": "^2.1.1"
   },
   "main": "lib/index.js",
