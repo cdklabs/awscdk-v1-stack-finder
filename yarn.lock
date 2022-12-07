@@ -895,9 +895,9 @@
     "@types/yargs-parser" "*"
 
 "@types/yargs@^17.0.8":
-  version "17.0.15"
-  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.15.tgz#5b62c89fb049e2fc8378394a2861a593055f0866"
-  integrity sha512-ZHc4W2dnEQPfhn06TBEdWaiUHEZAocYaiVMfwOipY5jcJt/251wVrKCBWBetGZWO5CF8tdb7L3DmdxVlZ2BOIg==
+  version "17.0.16"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-17.0.16.tgz#9ad7938c9dbe79a261e17adc1ed491de9999612c"
+  integrity sha512-Mh3OP0oh8X7O7F9m5AplC+XHYLBWuPKNkGVD3gIZFLFebBnuFI2Nz5Sf8WLvwGxECJ8YjifQvFdh79ubODkdug==
   dependencies:
     "@types/yargs-parser" "*"
 
@@ -1201,10 +1201,10 @@ available-typed-arrays@^1.0.5:
   resolved "https://registry.yarnpkg.com/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz#92f95616501069d07d10edb2fc37d3e1c65123b7"
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
-aws-sdk@^2.1268.0:
-  version "2.1268.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1268.0.tgz#a7bb57493f554322057f949fe41c64ee4b9e98a5"
-  integrity sha512-N2A42YrSMTDFCY5lU3QOJz+CZbGKIrAQS3We9+HjEeDP+FPE+M2H9Zzy8Mk18uC6v8bP3lbTTCpTTvtje6i+Pw==
+aws-sdk@^2.1269.0:
+  version "2.1269.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1269.0.tgz#8f3e6379e39b41fa9ba459d13b37ec47aae482b9"
+  integrity sha512-M8pOxsIjVms3d4o89dcpNTceXTpLU4DahRXH3uddCL9ctfuOmdRKkRvKJIRVMWPQlHWdi8gW1TC+3uCrhDPN8Q==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -4862,10 +4862,10 @@ progress@^2.0.3:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.65.47:
-  version "0.65.47"
-  resolved "https://registry.yarnpkg.com/projen/-/projen-0.65.47.tgz#87b60cb1131ab11aeefed57a813d51b70e6167ef"
-  integrity sha512-tsUBnMcYEQKR0VVZdBZupejjsrnNRq96qWh8Q9Qx5ha9lNukz63S57s5bMClisIjAK6ImtZ1rGLe25VTjnsLNg==
+projen@^0.65.48:
+  version "0.65.48"
+  resolved "https://registry.yarnpkg.com/projen/-/projen-0.65.48.tgz#bc2281a40337eb89b59164b49eee6b4251d12aa9"
+  integrity sha512-KzYnUFH/HTGSd+1Yc/Xy9ZxMsb4q51VTs6Z9ZakeJ3TcZpfRExzL9siCt8E95W3EAjyfNJzlpYAfEUIhx/3Eqw==
   dependencies:
     "@iarna/toml" "^2.2.5"
     case "^1.6.3"
