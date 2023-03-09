@@ -141,8 +141,8 @@ async function findV1Stacks(
       StackName: stack.StackName,
     }).promise().catch((error) => console.error(`${region}: Failed to get template for stack: ${stack.StackName}. Error: ${error}`)) as any;
 
-    var body;
-    var jsonErr;
+    let body;
+    let jsonErr;
     try {
       body = JSON.parse(getTemplateResponse.TemplateBody);
     } catch (err) { jsonErr = err; }
