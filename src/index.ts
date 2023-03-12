@@ -141,6 +141,11 @@ async function findV1Stacks(
       StackName: stack.StackName,
     }).promise().catch((error) => console.error(`${region}: Failed to get template for stack: ${stack.StackName}. Error: ${error}`)) as any;
 
+    if (!getTemplateResponse.TemplateBody) {
+      console.error(`${region}: Failed to parse template for stack: ${stack.StackName}. No template body was present`);
+      continue;
+    }
+
     var body;
     var jsonErr;
     try {
@@ -152,6 +157,7 @@ async function findV1Stacks(
         body = YAML.parse(getTemplateResponse.TemplateBody);
       } catch (yamlErr) {
         console.error(`${region}: Failed to parse template for stack: ${stack.StackName}. \nJSON Parse Error: ${jsonErr} \nYAML Parse Error: ${yamlErr}`);
+        continue;
       }
     }
 
