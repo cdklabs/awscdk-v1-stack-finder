@@ -166,6 +166,7 @@ async function findV1Stacks(
         const buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
         const analyticsString = zlib.gunzipSync(buf).toString();
         const constructInfo = decodePrefixEncodedString(analyticsString);
+        // Strings look like `<version>!<library>.<construct>`
         const stackConstruct = constructInfo.find(x => x.endsWith('@aws-cdk/core.Stack') || x.endsWith('monocdk.Stack'));
         if (stackConstruct) {
           stackVersion = stackConstruct.split('!')[0];
@@ -175,6 +176,7 @@ async function findV1Stacks(
       // Before versions 1.93.0 and 2.0.0-alpha.10, the CDKMetadata resource had a different format.
       if (body.Resources.CDKMetadata.Properties?.Modules) {
         const modules = body.Resources.CDKMetadata.Properties.Modules.split(',') as string[];
+        // Strings look like `<library>=<version>`
         const coreModule = modules.find(m => m.startsWith('@aws-cdk/core=') || m.startsWith('monocdk='));
         if (coreModule) {
           stackVersion = coreModule.split('=')[1];
