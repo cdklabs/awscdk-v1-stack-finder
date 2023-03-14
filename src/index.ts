@@ -58,6 +58,10 @@ const DEFAULT_AWS_REGIONS = [
   'af-south-1', // Africa (Cape Town)
   'eu-south-2', // Europe (Spain)
   'ap-southeast-3', // Asia Pacific (Jakarta) 29
+  'me-central-1', // Middle East (UAE)
+  'eu-central-2', // Europe (Zurich)
+  'ap-south-2', // Asia Pacific (Hyderabad)
+  'ap-southeast-4', // Asia Pacific (Melbourne)
 
   // these regions never return the listStacks call for some reason
   // and block the process forever.
@@ -84,9 +88,9 @@ export async function find() {
   console.log('');
 
   if (stacks.length === 0) {
-    console.log('No AWS CDK V1 stacks found');
+    console.log('No unsupported AWS CDK stacks found');
   } else {
-    console.log(`Found ${stacks.length} AWS CDK V1 stacks:`);
+    console.log(`Found ${stacks.length} stacks produced by an unsupported AWS CDK version:`);
     console.log('');
     for (const stack of stacks) {
       console.log(stack);
@@ -156,21 +160,97 @@ async function findV1Stacks(
     }
 
     if (body.Resources.CDKMetadata) {
-      let stackUsedV1 = false;
+      let stackVersion: undefined | string;
+
       if (body.Resources.CDKMetadata.Properties?.Analytics) {
         const buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
         const analyticsString = zlib.gunzipSync(buf).toString();
-        stackUsedV1 = analyticsString.slice(0, 1) === '1';
+        const constructInfo = decodePrefixEncodedString(analyticsString);
+        // Strings look like `<version>!<library>.<construct>`
+        const stackConstruct = constructInfo.find(x => x.endsWith('@aws-cdk/core.Stack') || x.endsWith('monocdk.Stack'));
+        if (stackConstruct) {
+          stackVersion = stackConstruct.split('!')[0];
+        }
       }
 
       // Before versions 1.93.0 and 2.0.0-alpha.10, the CDKMetadata resource had a different format.
       if (body.Resources.CDKMetadata.Properties?.Modules) {
-        stackUsedV1 = body.Resources.CDKMetadata.Properties.Modules.includes('@aws-cdk/core');
+        const modules = body.Resources.CDKMetadata.Properties.Modules.split(',') as string[];
+        // Strings look like `<library>=<version>`
+        const coreModule = modules.find(m => m.startsWith('@aws-cdk/core=') || m.startsWith('monocdk='));
+        if (coreModule) {
+          stackVersion = coreModule.split('=')[1];
+        }
       }
 
-      if (stackUsedV1) {
-        stacks.push(`name: ${stack.StackName} | id: ${stack.StackId}`);
+      if (stackVersion && (stackVersion.startsWith('1.') || stackVersion.startsWith('0.')) && stackVersion !== '0.0.0') {
+        stacks.push(`name: ${stack.StackName} | version: ${stackVersion} | id: ${stack.StackId}`);
       }
     }
+  }
+}
+
+/**
+ * Explode the prefix-encoded string
+ *
+ * Example:
+ *     '1.90.0!aws-cdk-lib.{Stack,Construct,service.Resource},0.42.1!aws-cdk-lib-experiments.NewStuff'
+ *
+ * Becomes:
+ *     [1.90.0!aws-cdk-lib.Stack, 1.90.0!aws-cdk-lib.Construct, 1.90.0!aws-cdk-lib.service.Resource, 0.42.1!aws-cdk-lib-experiments.NewStuff]
+ */
+function decodePrefixEncodedString(x: string) {
+  const ret = new Array<string>();
+  const prefixes = new Array<string>();
+  let current = new StringBuilder();
+  let i = 0;
+  while (i < x.length) {
+    switch (x[i]) {
+      case ',':
+        if (current.hasChars) {
+          ret.push(prefixes.join('') + current.toString());
+          current = new StringBuilder();
+        }
+        break;
+      case '}':
+        if (current.hasChars) {
+          ret.push(prefixes.join('') + current.toString());
+        }
+        current = new StringBuilder();
+        prefixes.pop();
+        break;
+      case '{':
+        prefixes.push(current.toString());
+        current = new StringBuilder();
+        break;
+      default:
+        current.append(x[i]);
+        break;
+    }
+
+    i += 1;
+  }
+  if (current.hasChars) {
+    ret.push(prefixes.join('') + current.toString());
+  }
+
+  return ret;
+}
+
+class StringBuilder {
+  private readonly parts = new Array<string>();
+  constructor() {
+  }
+
+  public append(x: string) {
+    this.parts.push(x);
+  }
+
+  public get hasChars() {
+    return this.parts.length > 0;
+  }
+
+  public toString(): string {
+    return this.parts.join('');
   }
 }
