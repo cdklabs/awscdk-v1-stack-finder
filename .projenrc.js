@@ -2,6 +2,7 @@ const { typescript } = require('projen');
 const project = new typescript.TypeScriptProject({
   defaultReleaseBranch: 'main',
   name: 'awscdk-v1-stack-finder',
+  majorVersion: 1,
 
   bin: {
     'awscdk-v1-stack-finder': 'bin/awscdk-v1-stack-finder',
