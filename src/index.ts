@@ -1,7 +1,5 @@
 import * as zlib from 'zlib';
 import * as AWS from 'aws-sdk';
-import { AWSError } from 'aws-sdk';
-import { PromiseResult } from 'aws-sdk/lib/request';
 import * as YAML from 'yaml';
 
 const ALL_STATUSES_EXCEPT_DELETE_COMPLETE = [
@@ -99,18 +97,27 @@ export async function find() {
 
 }
 
-async function listStacks(cloudformation: AWS.CloudFormation, region: string, nextToken?: AWS.CloudFormation.Types.NextToken) {
+async function listStacks(
+  cloudformation: AWS.CloudFormation,
+  region: string,
+  nextToken?: AWS.CloudFormation.Types.NextToken,
+): Promise<AWS.CloudFormation.ListStacksOutput> {
   console.log(`${region}: fetching stacks ${nextToken ? `(token: ${nextToken})` : ''}`);
-  const response = await cloudformation.listStacks({
-    StackStatusFilter: ALL_STATUSES_EXCEPT_DELETE_COMPLETE,
-    NextToken: nextToken,
-  }).promise().catch((error) => console.error(`${region}: Failed to list stacks. Error: ${error}`));
-  return response;
+  try {
+    const response = await cloudformation.listStacks({
+      StackStatusFilter: ALL_STATUSES_EXCEPT_DELETE_COMPLETE,
+      NextToken: nextToken,
+    }).promise();
+    return response;
+  } catch (error: any) {
+    console.error(`${region}: Failed to list stacks. Error: ${error.message}`);
+    return {};
+  }
 }
 
 
 async function processListStacksResponse(
-  response: PromiseResult<AWS.CloudFormation.Types.ListStacksOutput, AWSError> | void,
+  response: AWS.CloudFormation.ListStacksOutput,
   cloudformation: AWS.CloudFormation,
   region: string,
   stacks: string[]) {
