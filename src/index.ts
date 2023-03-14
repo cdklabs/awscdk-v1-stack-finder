@@ -88,9 +88,9 @@ export async function find() {
   console.log('');
 
   if (stacks.length === 0) {
-    console.log('No AWS CDK V1 stacks found');
+    console.log('No unsupported AWS CDK stacks found');
   } else {
-    console.log(`Found ${stacks.length} AWS CDK V1 stacks:`);
+    console.log(`Found ${stacks.length} stacks produced by an unsupported AWS CDK version:`);
     console.log('');
     for (const stack of stacks) {
       console.log(stack);
