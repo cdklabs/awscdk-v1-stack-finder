@@ -1,7 +1,5 @@
 import * as zlib from 'zlib';
 import * as AWS from 'aws-sdk';
-import { AWSError } from 'aws-sdk';
-import { PromiseResult } from 'aws-sdk/lib/request';
 import * as YAML from 'yaml';
 
 const ALL_STATUSES_EXCEPT_DELETE_COMPLETE = [
@@ -99,18 +97,27 @@ export async function find() {
 
 }
 
-async function listStacks(cloudformation: AWS.CloudFormation, region: string, nextToken?: AWS.CloudFormation.Types.NextToken) {
+async function listStacks(
+  cloudformation: AWS.CloudFormation,
+  region: string,
+  nextToken?: AWS.CloudFormation.Types.NextToken,
+): Promise<AWS.CloudFormation.ListStacksOutput> {
   console.log(`${region}: fetching stacks ${nextToken ? `(token: ${nextToken})` : ''}`);
-  const response = await cloudformation.listStacks({
-    StackStatusFilter: ALL_STATUSES_EXCEPT_DELETE_COMPLETE,
-    NextToken: nextToken,
-  }).promise().catch((error) => console.error(`${region}: Failed to list stacks. Error: ${error}`));
-  return response;
+  try {
+    const response = await cloudformation.listStacks({
+      StackStatusFilter: ALL_STATUSES_EXCEPT_DELETE_COMPLETE,
+      NextToken: nextToken,
+    }).promise();
+    return response;
+  } catch (error: any) {
+    console.error(`${region}: Failed to list stacks. Error: ${error.message}`);
+    return {};
+  }
 }
 
 
 async function processListStacksResponse(
-  response: PromiseResult<AWS.CloudFormation.Types.ListStacksOutput, AWSError> | void,
+  response: AWS.CloudFormation.ListStacksOutput,
   cloudformation: AWS.CloudFormation,
   region: string,
   stacks: string[]) {
@@ -141,51 +148,53 @@ async function findV1Stacks(
   stacks: string[]) {
 
   for (const stack of response.StackSummaries ?? []) {
-    const getTemplateResponse = await cloudformation.getTemplate({
-      StackName: stack.StackName,
-    }).promise().catch((error) => console.error(`${region}: Failed to get template for stack: ${stack.StackName}. Error: ${error}`)) as any;
-
-    let body;
-    let jsonErr;
     try {
-      body = JSON.parse(getTemplateResponse.TemplateBody);
-    } catch (err) { jsonErr = err; }
+      const getTemplateResponse = await cloudformation.getTemplate({
+        StackName: stack.StackName,
+      }).promise();
 
-    if (!body) {
+      if (!getTemplateResponse.TemplateBody) {
+        throw new Error('No template body found');
+      }
+
+      let body: any;
       try {
         body = YAML.parse(getTemplateResponse.TemplateBody);
       } catch (yamlErr) {
-        console.error(`${region}: Failed to parse template for stack: ${stack.StackName}. \nJSON Parse Error: ${jsonErr} \nYAML Parse Error: ${yamlErr}`);
+        throw new Error(`Template body parse error: ${yamlErr}`);
       }
-    }
 
-    if (body.Resources.CDKMetadata) {
-      let stackVersion: undefined | string;
+      if (body.Resources.CDKMetadata) {
+        let stackVersion: undefined | string;
 
-      if (body.Resources.CDKMetadata.Properties?.Analytics) {
-        const buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
-        const analyticsString = zlib.gunzipSync(buf).toString();
-        const constructInfo = decodePrefixEncodedString(analyticsString);
-        // Strings look like `<version>!<library>.<construct>`
-        const stackConstruct = constructInfo.find(x => x.endsWith('@aws-cdk/core.Stack') || x.endsWith('monocdk.Stack'));
-        if (stackConstruct) {
-          stackVersion = stackConstruct.split('!')[0];
+        if (body.Resources.CDKMetadata.Properties?.Analytics) {
+          const buf = Buffer.from(body.Resources.CDKMetadata.Properties.Analytics.split(':').splice(2)[0], 'base64');
+          const analyticsString = zlib.gunzipSync(buf).toString();
+          const constructInfo = decodePrefixEncodedString(analyticsString);
+          // Strings look like `<version>!<library>.<construct>`
+          const stackConstruct = constructInfo.find(x => x.endsWith('@aws-cdk/core.Stack') || x.endsWith('monocdk.Stack'));
+          if (stackConstruct) {
+            stackVersion = stackConstruct.split('!')[0];
+          }
+        }
+
+        // Before versions 1.93.0 and 2.0.0-alpha.10, the CDKMetadata resource had a different format.
+        if (body.Resources.CDKMetadata.Properties?.Modules) {
+          const modules = body.Resources.CDKMetadata.Properties.Modules.split(',') as string[];
+          // Strings look like `<library>=<version>`
+          const coreModule = modules.find(m => m.startsWith('@aws-cdk/core=') || m.startsWith('monocdk='));
+          if (coreModule) {
+            stackVersion = coreModule.split('=')[1];
+          }
+        }
+
+        if (stackVersion && (stackVersion.startsWith('1.') || stackVersion.startsWith('0.')) && stackVersion !== '0.0.0') {
+          stacks.push(`name: ${stack.StackName} | version: ${stackVersion} | id: ${stack.StackId}`);
         }
       }
-
-      // Before versions 1.93.0 and 2.0.0-alpha.10, the CDKMetadata resource had a different format.
-      if (body.Resources.CDKMetadata.Properties?.Modules) {
-        const modules = body.Resources.CDKMetadata.Properties.Modules.split(',') as string[];
-        // Strings look like `<library>=<version>`
-        const coreModule = modules.find(m => m.startsWith('@aws-cdk/core=') || m.startsWith('monocdk='));
-        if (coreModule) {
-          stackVersion = coreModule.split('=')[1];
-        }
-      }
-
-      if (stackVersion && (stackVersion.startsWith('1.') || stackVersion.startsWith('0.')) && stackVersion !== '0.0.0') {
-        stacks.push(`name: ${stack.StackName} | version: ${stackVersion} | id: ${stack.StackId}`);
-      }
+    } catch (e: any) {
+      console.error(`${region}: ${stack.StackName}: ${e.message}`);
+      continue;
     }
   }
 }
