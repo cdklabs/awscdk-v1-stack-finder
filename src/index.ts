@@ -159,7 +159,12 @@ async function findV1Stacks(
 
       let body: any;
       try {
-        body = YAML.parse(getTemplateResponse.TemplateBody);
+        body = YAML.parse(getTemplateResponse.TemplateBody, {
+          version:	'1.1',
+          // Don't complain about undefined !Ref tags (etc). This will not produce the right output,
+          // but for the purposes of looking at metadata it doesn't matter.
+          logLevel: 'silent',
+        });
       } catch (yamlErr) {
         throw new Error(`Template body parse error: ${yamlErr}`);
       }
