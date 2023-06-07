@@ -177,7 +177,7 @@ async function findV1Stacks(
           const analyticsString = zlib.gunzipSync(buf).toString();
           const constructInfo = decodePrefixEncodedString(analyticsString);
           // Strings look like `<version>!<library>.<construct>`
-          const stackConstruct = constructInfo.find(x => x.endsWith('@aws-cdk/core.Stack') || x.endsWith('monocdk.Stack'));
+          const stackConstruct = constructInfo.find(x => x.endsWith('@aws-cdk/core.Stack') || x.endsWith('monocdk.Stack') || x.includes('!monocdk.') );
           if (stackConstruct) {
             stackVersion = stackConstruct.split('!')[0];
           }
