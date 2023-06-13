@@ -1,7 +1,8 @@
-const { typescript } = require('projen');
+import { typescript } from 'projen';
 const project = new typescript.TypeScriptProject({
   defaultReleaseBranch: 'main',
   name: 'awscdk-v1-stack-finder',
+  projenrcTs: true,
   majorVersion: 1,
 
   bin: {
