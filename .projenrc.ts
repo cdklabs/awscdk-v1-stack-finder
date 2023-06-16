@@ -1,5 +1,9 @@
-import { typescript } from 'projen';
-const project = new typescript.TypeScriptProject({
+import { CdklabsTypeScriptProject } from 'cdklabs-projen-project-types';
+
+const project = new CdklabsTypeScriptProject({
+  setNodeEngineVersion: false,
+  stability: 'stable',
+  private: false,
   defaultReleaseBranch: 'main',
   name: 'awscdk-v1-stack-finder',
   projenrcTs: true,
@@ -8,12 +12,6 @@ const project = new typescript.TypeScriptProject({
   bin: {
     'awscdk-v1-stack-finder': 'bin/awscdk-v1-stack-finder',
   },
-
-  autoApproveOptions: {
-    allowedUsernames: ['cdklabs-automation'],
-    secret: 'GITHUB_TOKEN',
-  },
-  autoApproveUpgrades: true,
 
   releaseToNpm: true,
   sampleCode: false,
