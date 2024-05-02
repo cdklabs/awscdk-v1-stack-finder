@@ -1,5 +1,9 @@
 {
   "name": "awscdk-v1-stack-finder",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cdklabs/awscdk-v1-stack-finder.git"
+  },
   "bin": {
     "awscdk-v1-stack-finder": "bin/awscdk-v1-stack-finder"
   },
@@ -35,7 +39,7 @@
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^6",
     "@typescript-eslint/parser": "^6",
-    "cdklabs-projen-project-types": "^0.1.195",
+    "cdklabs-projen-project-types": "^0.1.196",
     "constructs": "^10.0.0",
     "eslint": "^8",
     "eslint-import-resolver-typescript": "^2.7.1",
