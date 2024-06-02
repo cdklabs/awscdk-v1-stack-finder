@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1632.0",
-    "yaml": "^2.4.2"
+    "yaml": "^2.4.3"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",
