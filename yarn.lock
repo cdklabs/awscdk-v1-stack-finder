@@ -1140,10 +1140,10 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-aws-sdk@^2.1636.0:
-  version "2.1636.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1636.0.tgz#2755de04924d1841bd4f1ea53dee959edc147126"
-  integrity sha512-0w/jOCYnwewLYjH4UCh3GTBjR/NMdvEKNrd1pnM4FvfJSmjfzCinDvmf5Qc6xeIrqPfrdYOoQh7NJhYeJScCIQ==
+aws-sdk@^2.1637.0:
+  version "2.1637.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1637.0.tgz#bcc5d7876d36b04b8f2663c101fa1eec22685c3c"
+  integrity sha512-oV5I/d9Bd9ktXPsHOOKaJy5R5ynN3XtxCzYn30xjTnkWmZx1QKD1BGmBGJR/DigdeNWvnuGWOSPh4KGkp6Jgag==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -5245,6 +5245,11 @@ yaml@^2.2.2, yaml@^2.4.3:
   version "2.4.3"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.4.3.tgz#0777516b8c7880bcaa0f426a5410e8d6b0be1f3d"
   integrity sha512-sntgmxj8o7DE7g/Qi60cqpLBA3HG3STcDA0kO+WfB05jEKhZMbY7umNm2rBpQvsmZ16/lPXCJGW2672dgOUkrg==
+
+yaml@^2.4.4:
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.4.4.tgz#e463681ec48fe9567f1ce35cf1e3a25e14b7b7e7"
+  integrity sha512-wle6DEiBMLgJAdEPZ+E8BPFauoWbwPujfuGJJFErxYiU4txXItppe8YqeFPAaWnW5CxduQ995X6b5e1NqrmxtA==
 
 yargs-parser@20.x, yargs-parser@^20.2.2, yargs-parser@^20.2.3:
   version "20.2.9"
