@@ -53,7 +53,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "aws-sdk": "^2.1683.0",
+    "aws-sdk": "^2.1684.0",
     "yaml": "^2.5.0"
   },
   "main": "lib/index.js",
